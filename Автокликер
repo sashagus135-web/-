@@ -1,0 +1,451 @@
+afk-clicker/
+├── .github/workflows/build.yml
+├── .gitignore
+├── build.gradle
+├── settings.gradle
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+├── gradle/wrapper/gradle-wrapper.properties
+└── app/
+    ├── build.gradle
+    ├── proguard-rules.pro
+    └── src/main/
+        ├── AndroidManifest.xml
+        ├── java/com/afk/clicker/
+        │   ├── MainActivity.kt
+        │   ├── AutoClickService.kt
+        │   └── Prefs.kt
+        └── res/
+            ├── layout/activity_main.xml
+            ├── values/strings.xml
+            └── xml/accessibility_config.xml name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk *.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties buildscript {
+    ext.kotlin_version = '1.9.22'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+} pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "AFK Clicker"
+include ':app' org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+android.nonTransitiveRClass=true
+kotlin.code.style=official #!/bin/sh
+
+##############################################################################
+##
+##  Gradle start up script for UN*X
+##
+##############################################################################
+
+APP_HOME=$(cd "${0%/*}" && pwd -P)
+APP_NAME="Gradle"
+APP_BASE_NAME=${0##*/}
+
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+
+# Используем java из JAVA_HOME или из PATH
+if [ -n "$JAVA_HOME" ]; then
+    JAVACMD="$JAVA_HOME/bin/java"
+else
+    JAVACMD="java"
+fi
+
+# Параметры JVM
+CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+
+exec "$JAVACMD" $DEFAULT_JVM_OPTS \
+    -classpath "$CLASSPATH" \
+    org.gradle.wrapper.GradleWrapperMain \
+    "$@" @rem Gradle startup script for Windows
+
+@if "%DEBUG%"=="" @echo off
+@rem Set local scope for the variables with windows NT shell
+if "%OS%"=="Windows_NT" setlocal
+
+set DIRNAME=%~dp0
+if "%DIRNAME%"=="" set DIRNAME=.
+set APP_BASE_NAME=%~n0
+set APP_HOME=%DIRNAME%
+
+@rem Find java.exe
+if defined JAVA_HOME goto findJavaFromJavaHome
+
+set JAVA_EXE=java.exe
+%JAVA_EXE% -version >NUL 2>&1
+if "%ERRORLEVEL%"=="0" goto execute
+
+echo ERROR: JAVA_HOME is not set and no 'java' command could be found.
+exit /b 1
+
+:findJavaFromJavaHome
+set JAVA_HOME=%JAVA_HOME:"=%
+set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+
+if exist "%JAVA_EXE%" goto execute
+echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
+exit /b 1
+
+:execute
+set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
+"%JAVA_EXE%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %* distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.afk.clicker'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.afk.clicker"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = '17' }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
+} # Пустой файл — правила обфускации не нужны <?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="AFK Clicker"
+        android:theme="@style/Theme.AppCompat.DayNight">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".AutoClickService"
+            android:exported="true"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_config" />
+        </service>
+    </application>
+</manifest> <?xml version="1.0" encoding="utf-8"?>
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeAllMask"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagDefault"
+    android:canPerformGestures="true"
+    android:canRetrieveWindowContent="true"
+    android:description="@string/accessibility_desc"
+    android:notificationTimeout="100" /> <resources>
+    <string name="app_name">AFK Clicker</string>
+    <string name="accessibility_desc">Сервис для имитации тапов в АФК-режиме. Тапает по случайным точкам экрана с заданным интервалом.</string>
+</resources> <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#0A0E14">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AFK Clicker"
+        android:textColor="#7EE787"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Проверка разрешений..."
+        android:textColor="#8B949E"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnAccess"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1. Включить Accessibility"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="▶ Запустить тапы"
+        android:backgroundTint="#238636"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btnStop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⏸ Остановить"
+        android:backgroundTint="#8B2C2C" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚠️ Roblox банит за автокликеры. Используй на свой риск."
+        android:textColor="#F85149"
+        android:textSize="11sp"
+        android:layout_marginTop="24dp" />
+</LinearLayout> package com.afk.clicker
+
+import android.content.Intent
+import android.os.Bundle
+import android.provider.Settings
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val status = findViewById<TextView>(R.id.status)
+        val btnAccess = findViewById<Button>(R.id.btnAccess)
+        val btnStart = findViewById<Button>(R.id.btnStart)
+        val btnStop = findViewById<Button>(R.id.btnStop)
+
+        btnAccess.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        }
+
+        btnStart.setOnClickListener {
+            val svc = AutoClickService.instance
+            if (svc == null) {
+                status.text = "❌ Сначала включи Accessibility"
+                return@setOnClickListener
+            }
+            svc.startClicking()
+            status.text = "✅ Тапы запущены"
+        }
+
+        btnStop.setOnClickListener {
+            AutoClickService.instance?.stopClicking()
+            status.text = "⏸ Тапы остановлены"
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val status = findViewById<TextView>(R.id.status)
+        status.text = if (AutoClickService.instance != null)
+            "✅ Accessibility подключён"
+        else
+            "⚠️ Accessibility не включён"
+    }
+} package com.afk.clicker
+
+import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.GestureDescription
+import android.graphics.Path
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.view.accessibility.AccessibilityEvent
+import kotlin.random.Random
+
+class AutoClickService : AccessibilityService() {
+
+    companion object {
+        var instance: AutoClickService? = null
+        var isRunning = false
+        var tapCount = 0
+    }
+
+    private val handler = Handler(Looper.getMainLooper())
+    private var active = false
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        instance = this
+        Log.d("AFK", "Accessibility подключён")
+        if (isRunning) startClicking()
+    }
+
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
+    override fun onInterrupt() {}
+
+    fun startClicking() {
+        if (active) return
+        active = true
+        isRunning = true
+        scheduleNextTap()
+    }
+
+    fun stopClicking() {
+        active = false
+        isRunning = false
+        handler.removeCallbacksAndMessages(null)
+    }
+
+    private fun scheduleNextTap() {
+        if (!active) return
+
+        val prefs = Prefs(this)
+        var delay = Random.nextLong(prefs.minInterval, prefs.maxInterval)
+
+        if (Random.nextInt(100) < prefs.fatigueChance) {
+            delay += Random.nextLong(3000, 9000)
+        }
+
+        handler.postDelayed({ performTap() }, delay)
+    }
+
+    private fun performTap() {
+        if (!active) return
+
+        val dm = resources.displayMetrics
+        val x = Random.nextFloat() * (dm.widthPixels - 200) + 100f
+        val y = Random.nextFloat() * (dm.heightPixels - 400) + 200f
+
+        val path = Path().apply { moveTo(x, y) }
+        val gesture = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 80))
+            .build()
+
+        dispatchGesture(gesture, object : GestureResultCallback() {
+            override fun onCompleted(gestureDescription: GestureDescription?) {
+                tapCount++
+                Log.d("AFK", "Тап #$tapCount в ($x, $y)")
+            }
+            override fun onCancelled(gestureDescription: GestureDescription?) {
+                Log.w("AFK", "Тап отменён")
+            }
+        }, null)
+
+        scheduleNextTap()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        instance = null
+        stopClicking()
+    }
+} package com.afk.clicker
+
+import android.content.Context
+
+class Prefs(ctx: Context) {
+    private val sp = ctx.getSharedPreferences("afk", Context.MODE_PRIVATE)
+
+    var minInterval: Long
+        get() = sp.getLong("min", 1500)
+        set(v) = sp.edit().putLong("min", v).apply()
+
+    var maxInterval: Long
+        get() = sp.getLong("max", 7000)
+        set(v) = sp.edit().putLong("max", v).apply()
+
+    var fatigueChance: Int
+        get() = sp.getInt("fatigue", 10)
+        set(v) = sp.edit().putInt("fatigue", v).apply()
+}
